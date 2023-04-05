@@ -1,0 +1,11 @@
+DROP TABLE t_game;
+
+CREATE TABLE t_game
+(
+  id SERIAL PRIMARY KEY,
+  title VARCHAR(50) NOT NULL,
+  x_count INTEGER NOT NULL,
+  y_count INTEGER NOT NULL,
+  answers TEXT NOT NULL,
+  create_time TIMESTAMP NOT NULL
+);

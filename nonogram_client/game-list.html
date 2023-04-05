@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+
+    <title>개인 연습</title>
+
+    <link rel="stylesheet" href="./css/style.css" />
+  </head>
+
+  <body>
+    <div class="container">
+      <h2>노노그램 게임 목록</h2>
+
+      <div class="game-list"></div>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="./js/api.js"></script>
+
+    <script>
+      const apiService = new APIService();
+
+      document.addEventListener("DOMContentLoaded", function() {
+        getGameListFromServer();
+      });
+
+      async function getGameListFromServer() {
+        try {
+          const resData = await apiService.getGameList();
+          console.log('resData', resData);
+
+          const container = document.querySelector('.game-list');
+
+          for (let i = 0; i < resData.length; ++i) {
+            const listItemElm = document.createElement('a');
+            listItemElm.setAttribute('class', 'game-item');
+            listItemElm.setAttribute('href', `/game-detail.html?id=${resData[i].id}`)
+            listItemElm.innerHTML = `${resData[i].title} (${resData[i].xCount}x${resData[i].yCount})`;
+            container.prepend(listItemElm);
+          }
+
+        } catch(error) {
+          console.error('getGameListFromServer', error);
+          alert('에러 발생');
+
+        }
+      }
+
+    </script>
+  </body>
+</html>

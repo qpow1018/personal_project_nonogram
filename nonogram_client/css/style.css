@@ -1,0 +1,140 @@
+* {
+  box-sizing: border-box;
+}
+
+.container {
+  padding: 40px;
+}
+
+.game-start-menu a {
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  border: 1px solid #b2b2b2;
+  min-width: 140px;
+  height: 40px;
+  margin-right: 12px;
+  color: #000;
+}
+
+.game-title-box {
+  margin-bottom: 30px;
+}
+
+.game-option {
+  display: flex;
+  margin-bottom: 30px;
+}
+.game-option .make-game-table-button {
+  display: block;
+  cursor: pointer;
+  width: 80px;
+  height: 32px;
+  margin-right: 12px;
+  border: 1px solid #b2b2b2;
+  background-color: transparent;
+  border-radius: 4px;
+}
+.game-option .make-game-table-button.active {
+  border-color: #e23e57;
+  color: #e23e57;
+  font-weight: 700;
+}
+
+.game-table {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.cell {
+  position: relative;
+  cursor: pointer;
+  width: 40px;
+  height: 40px;
+  box-shadow: 0 0 1px black;
+}
+.cell.active::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 36px;
+  height: 36px;
+  background-color: black;
+}
+.cell.close::after {
+  content: 'X';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: red;
+  font-weight: 700;
+}
+
+.submit-button-box {
+  margin-top: 30px;
+}
+.submit-button-box button {
+  cursor: pointer;
+  width: 140px;
+  height: 40px;
+  border-radius: 4px;
+  border: none;
+  background-color: #e23e57;
+  color: #fff;
+  font-weight: 700;
+}
+.submit-button-box button:disabled {
+  background-color: #ddd;
+  cursor: not-allowed;
+}
+
+.game-item {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  border: 1px solid black;
+  text-decoration: none;
+  color: black;
+}
+
+.game-table-container {
+  display: flex;
+}
+.game-table-header {
+  display: flex;
+  justify-content: flex-end;
+}
+.game-table-header .row {
+  width: 40px;
+  box-shadow: 0 0 1px black;
+  padding: 8px 0;
+}
+.game-table-header .row span {
+  display: block;
+  height: 24px;
+  text-align: center;
+}
+.game-table-body {
+  display: flex;
+}
+.game-table-body .game-table-sidebar .row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  min-width: 200px;
+  height: 40px;
+  padding: 0 8px;
+  box-shadow: 0 0 1px black;
+}
+.game-table-body .game-table-sidebar .row span {
+  width: 24px;
+  text-align: center;
+}

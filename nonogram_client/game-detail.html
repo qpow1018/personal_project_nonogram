@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+
+    <title>개인 연습</title>
+
+    <link rel="stylesheet" href="./css/style.css" />
+  </head>
+
+  <body>
+    <div class="container">
+      <h2>노노그램 게임 풀기</h2>
+
+      <div class="game-table-container">
+        <div class="inner">
+          <div class="game-table-header"></div>
+          <div class="game-table-body">
+            <div class="game-table-sidebar"></div>
+            <div class="game-table"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="submit-button-box">
+        <button
+          onclick="submitGameAnswer()"
+        >
+          정답 제출
+        </button>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="./js/api.js"></script>
+    <script src="./js/cell.js"></script>
+    <script src="./js/index.js"></script>
+
+    <script>
+      const apiService = new APIService();
+      let gameAnswers = [];
+
+      document.addEventListener("DOMContentLoaded", function() {
+        const url = new URL(window.location.href);
+        const urlParams = url.searchParams;
+        const gameId = urlParams.get('id');
+        getGameDetailFromServer(gameId);
+      });
+
+      async function getGameDetailFromServer(gameId) {
+        try {
+          const resData = await apiService.getGameDetail(gameId);
+
+          const _answers = JSON.parse(resData.answers);
+          makeGameTableContainer(resData.xCount, resData.yCount, _answers);
+
+        } catch(error) {
+          console.error('getGameDetailFromServer', error);
+          alert('에러 발생');
+
+        }
+      }
+
+      function makeGameTableContainer(xCount, yCount, answers) {
+        gameAnswers = answers;
+        makeXhintElement(xCount, yCount, answers);
+        makeYhintElement(xCount, yCount, answers);
+
+        makeGameTable(xCount, yCount);
+      }
+
+      function makeXhintElement(xCount, yCount, answers) {
+        const headerElm = document.querySelector('.game-table-sidebar');
+
+        for (let i = 0; i < yCount; ++i) {
+          const sidebarRowElm = document.createElement('div');
+          sidebarRowElm.setAttribute('class', 'row');
+
+          const yMatchList = answers.filter(item => item.y === i);
+          const xValueList = yMatchList.map(item => item.x);
+
+          const hintArray = countContinuousNumber(xValueList, xCount);
+          hintArray.forEach((number) => {
+            const spanElm = document.createElement('span');
+            spanElm.innerHTML = number;
+            sidebarRowElm.append(spanElm);
+          });
+
+          headerElm.append(sidebarRowElm);
+        }
+      }
+
+      function makeYhintElement(xCount, yCount, answers) {
+        const headerElm = document.querySelector('.game-table-header');
+
+        for (let i = 0; i < xCount; ++i) {
+          const headerRowElm = document.createElement('div');
+          headerRowElm.setAttribute('class', 'row');
+
+          const xMatchList = answers.filter(item => item.x === i);
+          const yValueList = xMatchList.map(item => item.y);
+
+          const hintArray = countContinuousNumber(yValueList, yCount);
+          hintArray.forEach((number) => {
+            const spanElm = document.createElement('span');
+            spanElm.innerHTML = number;
+            headerRowElm.append(spanElm);
+          });
+
+          headerElm.append(headerRowElm);
+        }
+      }
+
+      function countContinuousNumber(numberArr, maxArrayLength) {
+        const _numberArr = [ ...numberArr ];
+
+        const hintArray = [];
+        let hintArrayIndex = 0;
+
+        let prevNumber = null;
+        let count = 1;
+
+        for (let i = 0; i < _numberArr.length; ++i) {
+          const currentNumber = _numberArr[i];
+
+          if (prevNumber === null) {
+            prevNumber = currentNumber;
+            hintArray.push(count);
+            continue;
+          }
+
+          if (currentNumber === (prevNumber + 1)) {
+            prevNumber = currentNumber;
+            count = count + 1;
+            hintArray[hintArrayIndex] = count;
+
+          } else {
+            prevNumber = currentNumber;
+            count = 1;
+            hintArrayIndex = hintArrayIndex + 1;
+            hintArray.push(count);
+
+          }
+        }
+
+        return hintArray;
+      }
+
+      function submitGameAnswer() {
+        const cells = tableDatas;
+        const activeCells = cells.filter(item => item.getState() === CellState.active);
+        const activeCellPostions = activeCells.map(item => ({
+          x: item.getX(),
+          y: item.getY()
+        }));
+
+        if (JSON.stringify(activeCellPostions) === JSON.stringify(gameAnswers)) {
+          alert('정답');
+        } else {
+          alert('틀렸음');
+        }
+      }
+
+    </script>
+  </body>
+</html>

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+
+    <title>개인 연습</title>
+
+    <link rel="stylesheet" href="./css/style.css" />
+  </head>
+
+  <body>
+    <div class="container">
+      <h2>노노그램 게임 만들기</h2>
+
+      <div class="game-title-box">
+        <label>게임 제목</label>
+        <input
+          type="text"
+          name="title"
+          id="gameTitleInput"
+        />
+      </div>
+
+      <div class="game-option">
+        <button
+          type="button"
+          class="make-game-table-button active"
+          onclick="handleClickMakeGameTableButton(this, 5, 5)"
+        >
+          5x5
+        </button>
+        <button
+          type="button"
+          class="make-game-table-button"
+          onclick="handleClickMakeGameTableButton(this, 10, 10)"
+        >
+          10x10
+        </button>
+        <button
+          type="button"
+          class="make-game-table-button"
+          onclick="handleClickMakeGameTableButton(this, 15, 15)"
+        >
+          15x15
+        </button>
+      </div>
+
+      <div class="game-table"></div>
+
+      <div class="submit-button-box">
+        <button
+          id="makeGameButton"
+          onclick="makeGame()"
+        >
+          만들기
+        </button>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="./js/api.js"></script>
+    <script src="./js/cell.js"></script>
+    <script src="./js/index.js"></script>
+
+    <script>
+      const apiService = new APIService();
+      let xCount = 5;
+      let yCount = 5;
+
+      document.addEventListener("DOMContentLoaded", function() {
+        makeGameTable(xCount, yCount);
+      });
+
+      function handleClickMakeGameTableButton(_this, _xCount, _yCount) {
+        xCount = _xCount;
+        yCount = _yCount;
+
+        document.querySelectorAll('.make-game-table-button').forEach((elm) => {
+          elm.classList.remove('active');
+        });
+
+        _this.classList.add('active');
+
+        makeGameTable(xCount, yCount);
+      }
+
+      function makeGame() {
+        const gameTitle = document.querySelector('#gameTitleInput').value.trim();
+        if (gameTitle === '') {
+          alert('제목 입력 필요');
+          return;
+        }
+
+        const cells = tableDatas;
+        const activeCells = cells.filter(item => item.getState() === CellState.active);
+
+        // 채워진게 하나도 없으면 안됨
+        if (activeCells.length === 0) {
+          alert('하나라도 채워야지');
+          return;
+        }
+
+        // 모두 다 채워도 이상하지
+        if (activeCells.length === (xCount * yCount)) {
+          alert('모두다 채우면 이상하지');
+          return;
+        }
+
+        const activeCellPostions = activeCells.map(item => ({
+          x: item.getX(),
+          y: item.getY()
+        }));
+
+        setButtonLoading(true)
+        createGameFromServer(gameTitle, xCount, yCount, activeCellPostions);
+      }
+
+      async function createGameFromServer(gameTitle, xCount, yCount, answers) {
+        try {
+          await apiService.createGame(gameTitle, xCount, yCount, answers);
+          alert('게임 만들기 성공');
+
+          window.location = '/';
+
+        } catch(error) {
+          console.error('createGameFromServer', error);
+          alert('에러 발생');
+
+        } finally {
+          setButtonLoading(false);
+
+        }
+      }
+
+      function setButtonLoading(isLoading) {
+        const makeGameButton = document.querySelector('#makeGameButton');
+
+        if (isLoading === true) {
+          makeGameButton.setAttribute('disabled', true);
+        } else {
+          makeGameButton.removeAttribute('disabled');
+        }
+
+      }
+
+    </script>
+  </body>
+</html>
